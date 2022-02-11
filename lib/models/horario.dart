@@ -1,25 +1,33 @@
+// To parse this JSON data, do
+//
+//     final horario = horarioFromJson(jsonString);
 
+import 'dart:convert';
 
-class Horario{
+Horario horarioFromJson(String str) => Horario.fromJson(json.decode(str));
 
-  String id;
-  String hora;
-  int usado;
-  int cantidadComida;
+String horarioToJson(Horario data) => json.encode(data.toJson());
 
-  Horario({
-    this.id = '',
-    this.hora = "",
-    this.usado = 0,
-    this.cantidadComida = 0,
-  });
+class Horario {
+    Horario({
+        required this.hora,
+        required this.cantidadComida,
+        required this.uid,
+    });
 
-  factory Horario.fromMap(Map<String, dynamic> obj) 
-    => Horario(
-      id: obj['id'],
-      hora:   obj['hora'],
-      usado:  obj['usado'],
-      cantidadComida: obj['cantidadComida'],
+    String hora;
+    int cantidadComida;
+    String uid;
+
+    factory Horario.fromJson(Map<String, dynamic> json) => Horario(
+        hora: json["hora"],
+        cantidadComida: json["cantidadComida"],
+        uid: json["uid"],
     );
-}
 
+    Map<String, dynamic> toJson() => {
+        "hora": hora,
+        "cantidadComida": cantidadComida,
+        "uid": uid,
+    };
+}

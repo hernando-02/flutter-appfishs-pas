@@ -9,9 +9,9 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   List<Horario> horarios = [
-    Horario(cantidadComida: 600, hora: '06:00 am', usado: 2),
-    Horario(cantidadComida: 600, hora: '04:00 pm', usado: 2),
-    Horario(cantidadComida: 600, hora: '17:00 pm', usado: 2),
+    Horario(cantidadComida: 600, hora: '06:00 am', uid: '15263'),
+    Horario(cantidadComida: 600, hora: '04:00 pm', uid: '15263'),
+    Horario(cantidadComida: 600, hora: '17:00 pm', uid: '15263'),
   ];
 
   @override
@@ -68,18 +68,18 @@ class _HomePageState extends State<HomePage> {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
       children: <Widget>[
-        MaterialButton(
-          textColor: Colors.white,
-          color: Colors.blue,
-          child: Text(
-            'Alimentar ya',
-            style: TextStyle(fontSize: 22.0),
-          ),
-          // cuando se presione navegar a las pantalla de alimentar
-          onPressed: () {
-            Navigator.pushNamed(context, 'alimentar');
-          }
-        ),
+        // MaterialButton(
+        //   textColor: Colors.white,
+        //   color: Colors.blue,
+        //   child: Text(
+        //     'Alimentar ya',
+        //     style: TextStyle(fontSize: 22.0),
+        //   ),
+        //   // cuando se presione navegar a las pantalla de alimentar
+        //   onPressed: () {
+        //     Navigator.pushNamed(context, 'alimentar');
+        //   }
+        // ),
         MaterialButton(
           textColor: Colors.white,
           child: Text(

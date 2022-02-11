@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
+import 'package:fishs_app/services/new_service.dart';
 // import 'package:intl/intl.dart';
 
 import 'package:fishs_app/models/horario.dart';
@@ -13,7 +15,7 @@ class _HorarioConfiState extends State<HorarioConfi> {
 
   // ! esto es para hacer pruebas
   List<Horario> horarios = [
-    Horario(id: DateTime.now().toString(), cantidadComida:  600, hora: '06:00 PM', usado: 2),
+    Horario(uid: DateTime.now().toString(), cantidadComida:  600, hora: '06:00 PM', ),
     // Horario(cantidadComida: 600, hora: '04:00 pm', usado: 2),
     // Horario(cantidadComida: 600, hora: '09:00 pm', usado: 2),
   ];
@@ -67,6 +69,8 @@ class _HorarioConfiState extends State<HorarioConfi> {
 
   @override
   Widget build(BuildContext context) {
+
+
     return Scaffold(
       appBar: AppBar(
         title: Text(
@@ -92,6 +96,11 @@ class _HorarioConfiState extends State<HorarioConfi> {
   }
 
   Container _formNuevoHorario( context) {
+
+    // TODO: puede dar posible error
+    final newService = Provider.of<NewServices>(context);
+
+
     return Container(
       color: Colors.white,
       height: 290.0,
@@ -168,8 +177,16 @@ class _HorarioConfiState extends State<HorarioConfi> {
             child: Text('Añadir al horario',
               style: TextStyle(fontSize: 22.0),
             ),
-            onPressed: (){
-              addNewHorarioToList( convertirDateTimeToString(selectedTime) , int.parse(ctrlComida.text));
+            onPressed: newService.autenticando? null : () async {
+
+              FocusScope.of(context).unfocus();
+
+              final loginOk = await newService.newHorario(convertirDateTimeToString(selectedTime), int.parse(ctrlComida.text.trim()) );
+              if(loginOk != null && loginOk){
+                // mostrar el horario nuevo en la lista
+                addNewHorarioToList( convertirDateTimeToString(selectedTime) , int.parse(ctrlComida.text));
+
+              }
 
             }
           ),
@@ -213,7 +230,7 @@ class _HorarioConfiState extends State<HorarioConfi> {
           horarios.removeAt(index);
         });
       },
-      key: Key(horarios[index].id),
+      key: Key(horarios[index].uid),
       background: Column(
         children: [
           Container(height: 2.0,),
@@ -255,7 +272,7 @@ class _HorarioConfiState extends State<HorarioConfi> {
   addNewHorarioToList( String hora, int cantidadComida) {
     if(hora.length > 0  && cantidadComida > 0){
       // int canComida = int.parse()
-      this.horarios.add(new Horario(id: DateTime.now().toString(),cantidadComida:cantidadComida, hora: hora ));
+      this.horarios.add(new Horario(uid: DateTime.now().toString(),cantidadComida:cantidadComida, hora: hora ));
       setState(() { });
     }
   }
