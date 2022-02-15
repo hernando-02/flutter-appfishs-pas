@@ -1,3 +1,5 @@
+import 'package:fishs_app/helpers/mostrar_alerta.dart';
+import 'package:fishs_app/services/horarios_services.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -5,6 +7,7 @@ import 'package:fishs_app/services/new_service.dart';
 // import 'package:intl/intl.dart';
 
 import 'package:fishs_app/models/horario.dart';
+import 'package:pull_to_refresh/pull_to_refresh.dart';
 
 class HorarioConfi extends StatefulWidget {
   @override
@@ -13,12 +16,12 @@ class HorarioConfi extends StatefulWidget {
 
 class _HorarioConfiState extends State<HorarioConfi> {
 
+  RefreshController _refreshController = RefreshController(initialRefresh: false);
+  final horarioService = new HorariosServices();
+
+
   // ! esto es para hacer pruebas
-  List<Horario> horarios = [
-    Horario(uid: DateTime.now().toString(), cantidadComida:  600, hora: '06:00 PM', ),
-    // Horario(cantidadComida: 600, hora: '04:00 pm', usado: 2),
-    // Horario(cantidadComida: 600, hora: '09:00 pm', usado: 2),
-  ];
+  List<Horario> horarios = [];
 
   final ctrlComida = TextEditingController();
   
@@ -39,6 +42,7 @@ class _HorarioConfiState extends State<HorarioConfi> {
     // newDateTime = DateTime.parse(anotherDate);
     selectedDate = DateTime.now();
     selectedTime = TimeOfDay.now();
+   _cargarHorarios();    
   }
 
   // _selectedDate(BuildContext context) async {
@@ -72,6 +76,7 @@ class _HorarioConfiState extends State<HorarioConfi> {
 
 
     return Scaffold(
+      backgroundColor: Colors.white,
       appBar: AppBar(
         title: Text(
           'Horario',
@@ -80,7 +85,16 @@ class _HorarioConfiState extends State<HorarioConfi> {
         centerTitle: true,
         backgroundColor: Colors.white,
       ),
-      body: bodyColumn(context)
+      body:SmartRefresher(
+        controller: _refreshController,
+        enablePullDown: true,
+        onRefresh: _cargarHorarios,
+        header: WaterDropHeader(
+          complete: Icon(Icons.check, color: Colors.green[600],),
+          waterDropColor: Colors.green,
+        ),
+        child:bodyColumn(context) ,
+      ),
     );
   }
 
@@ -179,13 +193,19 @@ class _HorarioConfiState extends State<HorarioConfi> {
             ),
             onPressed: newService.autenticando? null : () async {
 
+              /* 
+                TODO: asegurarme que vaya informacion en la caja de texto de la cantidad de comida
+              */
+
               FocusScope.of(context).unfocus();
 
               final loginOk = await newService.newHorario(convertirDateTimeToString(selectedTime), int.parse(ctrlComida.text.trim()) );
               if(loginOk != null && loginOk){
                 // mostrar el horario nuevo en la lista
                 addNewHorarioToList( convertirDateTimeToString(selectedTime) , int.parse(ctrlComida.text));
-
+              } else {
+                // mostrar alerta 
+                mostrarAlerta(context, 'Error', 'Esta hora ya está programada');
               }
 
             }
@@ -265,6 +285,15 @@ class _HorarioConfiState extends State<HorarioConfi> {
           title: Text(horarios[index].hora),
           trailing: Text('${horarios[index].cantidadComida} gr'),
         ),
+        // ListTile(
+        //   leading: Icon(
+        //     Icons.alarm_on_outlined,
+        //     color: Colors.greenAccent[700],
+        //   ),
+        //   tileColor: Colors.blue[100],
+        //   title: Text(horarios[index].hora),
+        //   trailing: Text('${horarios[index].cantidadComida} gr'),
+        // ),
       ),
     );
   }
@@ -302,13 +331,23 @@ class _HorarioConfiState extends State<HorarioConfi> {
       minuto = '${minuInt}';
     }    
     
-    String time = '${selectedTime.hour}:${minuto} ${amPm}';
+    String time = '${selectedTime.hour}:${minuto}:00';
     
     if(horaInt < 10) {
-      time = '0${selectedTime.hour}:${minuto} ${amPm}';
+      time = '0${selectedTime.hour}:${minuto}:00';
 
     }
     return time;
+  }
+
+  _cargarHorarios() async{
+
+
+    this.horarios = await horarioService.getHorarios();
+    setState(() {});
+    // await Future.delayed(Duration(milliseconds: 1000));
+    // if failed,use refreshFailed()
+    _refreshController.refreshCompleted();
   }
 
 }

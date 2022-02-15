@@ -26,13 +26,13 @@ class NewServices with ChangeNotifier{
     notifyListeners();
   }
 
-  Future<bool?> newHorario(String hora, int CantidadComida) async {
+  Future<bool?> newHorario(String hora, int cantidadComida) async {
 
     this.autenticando = true;
 
     final data = {
       "hora": hora,
-      "cantidadComida": CantidadComida
+      "cantidadComida": cantidadComida
     };
       
     final resp = await http.post( Uri.parse('${Environment.apiUrl}/creacion/new'),
@@ -56,4 +56,7 @@ class NewServices with ChangeNotifier{
       return false;
     }
   }
+
+  // TODO: aqui podria hacer el metodo que devuelva los horarios
+
 }

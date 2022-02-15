@@ -15,8 +15,10 @@ class MyApp extends StatelessWidget {
       ],
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
-        title: 'Material App',
+        title: 'App fish',
         initialRoute: 'home',
+        // configurar
+        // home
         routes: appRoutes
       ),
     );
